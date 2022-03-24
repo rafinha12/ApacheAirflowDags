@@ -24,7 +24,7 @@ else:
     config_file=None
 
 dag = DAG('example_kubernetes_pod',
-           schedule_interval="* */1 * * *",
+           schedule_interval="* */10 * * *",
           default_args=default_args)
 
 with dag:
