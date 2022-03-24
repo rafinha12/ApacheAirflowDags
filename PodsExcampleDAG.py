@@ -1,74 +1,40 @@
-#
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
-# specific language governing permissions and limitations
-# under the License.
-
-"""Example DAG demonstrating the usage of the BranchPythonOperator."""
-
-import random
-
-import pendulum
-
 from airflow import DAG
-from airflow.operators.dummy import DummyOperator
-from airflow.operators.python import BranchPythonOperator
-from airflow.utils.edgemodifier import Label
-from airflow.utils.trigger_rule import TriggerRule
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
-    KubernetesPodOperator,
-)
-import random
+from datetime import datetime, timedelta
+from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
+from airflow import configuration as conf
+from airflow.utils.dates import days_ago
 
+default_args = {
+    'owner': 'user',
+    'start_date': days_ago(5),
+    'email': ['user@airflow.de'],
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 0
+}
 
-with DAG(
-    dag_id='example_Kubernetes',
-    start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
-    catchup=False,
-    schedule_interval="* */1 * * *",
-    tags=['example', 'example2'],
-) as dag:
-    run_this_first = DummyOperator(
-        task_id='run_this_first',
-    )
+namespace = conf.get('kubernetes', 'NAMESPACE')
 
-    start = 1
-    end = random.randint(3, 8)
-    camerasInt = range(start, end + 1)
-    cameras =  [str(x) for x in camerasInt]
+if namespace =='default':
+    config_file = '/home/user/.kube/config'
+    in_cluster=False
+else:
+    in_cluster=True
+    config_file=None
 
-    
+dag = DAG('example_kubernetes_pod',
+          schedule_interval='@once',
+          default_args=default_args)
 
-    join = DummyOperator(
-        task_id='join',
-        trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS,
-    )
-   
-    for camera in cameras:
-
-        k = KubernetesPodOperator(
-            name="hello-dry-run",
-            image="debian",
-            cmds=["bash", "-cx"],
-            arguments=["echo", "ey que pasa crack"+camera],
-            labels={"foo": "bar"},
-            task_id="Camarita"+camera,
-            do_xcom_push=True,
-        )
-
-        k.dry_run()
-
-        # Label is optional here, but it can help identify more complex branches
-        run_this_first >> Label(str(camera)) >> k >> join
+with dag:
+    k = KubernetesPodOperator(
+        namespace=namespace,
+        image="hello-world",
+        labels={"foo": "bar"},
+        name="airflow-test-pod",
+        task_id="task-one",
+        in_cluster=in_cluster, # if set to true, will look in the cluster, if false, looks for file
+        cluster_context='minikube', # is ignored when in_cluster is set to True
+        config_file=config_file,
+        is_delete_operator_pod=True,
+        get_logs=True)
