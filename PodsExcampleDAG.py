@@ -21,8 +21,8 @@ else:
     in_cluster=True
     config_file=None
 
-dag = DAG('example_kubernetes_podito',
-        dag_id='example_Rafa',
+dag = DAG(
+        dag_id='example_kubernetes_podito',
         start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
         catchup=False,
         schedule_interval="* */10 * * *",
