@@ -8,14 +8,9 @@ from airflow.operators.python import BranchPythonOperator
 from airflow.utils.edgemodifier import Label
 from airflow.utils.trigger_rule import TriggerRule
 import random
+import pendulum
 
-default_args = {
-    'owner': 'user',
-    'email': ['user@airflow.de'],
-    'email_on_failure': False,
-    'email_on_retry': False,
-    'retries': 0
-}
+
 
 namespace = conf.get('kubernetes', 'NAMESPACE')
 
@@ -27,8 +22,12 @@ else:
     config_file=None
 
 dag = DAG('example_kubernetes_podito',
+        dag_id='example_Rafa',
+        start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
+        catchup=False,
         schedule_interval="* */10 * * *",
-        default_args=default_args)
+        tags=['example', 'example2'],
+        )
 
 with dag:
     run_this_first = DummyOperator(
