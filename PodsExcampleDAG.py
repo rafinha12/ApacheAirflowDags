@@ -3,6 +3,10 @@ from datetime import datetime, timedelta
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow import configuration as conf
 from airflow.utils.dates import days_ago
+from airflow.operators.dummy import DummyOperator
+from airflow.operators.python import BranchPythonOperator
+from airflow.utils.edgemodifier import Label
+from airflow.utils.trigger_rule import TriggerRule
 import random
 
 default_args = {
@@ -28,12 +32,29 @@ dag = DAG('example_kubernetes_pod',
           default_args=default_args)
 
 with dag:
-    
+    run_this_first = DummyOperator(
+        task_id='run_this_first',
+    )
     start = 1
     end = random.randint(3, 8)
     camerasInt = range(start, end + 1)
     cameras =  [str(x) for x in camerasInt]
+    
+    branching = BranchPythonOperator(
+        task_id='branching',
+        python_callable=lambda: cameras,
+    )
+    run_this_first >> branching
+    join = DummyOperator(
+        task_id='join',
+        trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS,
+    )
+
     for camera in cameras:
+        
+        t = DummyOperator(
+            task_id=str(camera),
+        )
         k = KubernetesPodOperator(
             namespace=namespace,
             image="hello-world",
@@ -45,3 +66,6 @@ with dag:
             config_file=config_file,
             is_delete_operator_pod=True,
             get_logs=True)
+        
+        # Label is optional here, but it can help identify more complex branches
+        branching >> Label(str(camera)) >> t >> k >> join
