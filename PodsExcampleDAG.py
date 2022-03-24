@@ -11,7 +11,6 @@ import random
 
 default_args = {
     'owner': 'user',
-    'start_date': days_ago(5),
     'email': ['user@airflow.de'],
     'email_on_failure': False,
     'email_on_retry': False,
@@ -28,8 +27,8 @@ else:
     config_file=None
 
 dag = DAG('example_kubernetes_pod',
-           schedule_interval="* */10 * * *",
-          default_args=default_args)
+        schedule_interval="* */10 * * *",
+        default_args=default_args)
 
 with dag:
     run_this_first = DummyOperator(
