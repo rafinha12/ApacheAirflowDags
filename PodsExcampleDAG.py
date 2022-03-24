@@ -24,6 +24,8 @@ else:
 dag = DAG(
         dag_id='example_kubernetes_podito',
         start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
+        concurrency=5, 
+        max_active_runs=2,
         catchup=False,
         schedule_interval="* */10 * * *",
         tags=['example', 'example2'],
@@ -34,7 +36,7 @@ with dag:
         task_id='run_this_first',
     )
     start = 1
-    end = random.randint(3, 8)
+    end = 10#random.randint(3, 8)
     camerasInt = range(start, end + 1)
     cameras =  [str(x) for x in camerasInt]
     
