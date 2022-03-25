@@ -40,10 +40,7 @@ with dag:
     run_this_first = DummyOperator(
         task_id='run_this_first',
     )
-    start = 1
-    end = random.randint(3, 30)
-    camerasInt = range(start, end + 1)
-    cameras =  [str(x) for x in camerasInt]
+    
     
     branching = BranchPythonOperator(
         task_id='branching'+str(brancheo),
