@@ -22,12 +22,12 @@ else:
     config_file=None
 
 dag = DAG(
-        dag_id='example_kubernetes_podito',
+        dag_id='example_kubernetes_podsitatore',
         start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
         concurrency=20, 
         max_active_runs=2,
         catchup=False,
-        schedule_interval="* */10 * * *",
+        schedule_interval="@daily",
         tags=['example', 'example2'],
         )
 
