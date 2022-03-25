@@ -13,11 +13,7 @@ import pendulum
 
 
 namespace = conf.get('kubernetes', 'NAMESPACE')
-start = 1
-end = random.randint(7, 12)
-camerasInt = range(start, end + 1)
-cameras =  [str(x) for x in camerasInt]
-brancheo = len(cameras)
+
 
 if namespace =='default':
     config_file = '/home/user/.kube/config'
@@ -37,6 +33,11 @@ dag = DAG(
         )
 
 with dag:
+    start = 1
+    end = random.randint(7, 12)
+    camerasInt = range(start, end + 1)
+    cameras =  [str(x) for x in camerasInt]
+    brancheo = len(cameras)
     run_this_first = DummyOperator(
         task_id='run_this_first',
     )
