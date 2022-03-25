@@ -13,6 +13,11 @@ import pendulum
 
 
 namespace = conf.get('kubernetes', 'NAMESPACE')
+start = 1
+end = random.randint(3, 30)
+camerasInt = range(start, end + 1)
+cameras =  [str(x) for x in camerasInt]
+brancheo = len(cameras)
 
 if namespace =='default':
     config_file = '/home/user/.kube/config'
@@ -41,7 +46,7 @@ with dag:
     cameras =  [str(x) for x in camerasInt]
     
     branching = BranchPythonOperator(
-        task_id='branching',
+        task_id='branching'+brancheo,
         python_callable=lambda: cameras,
     )
     run_this_first >> branching
