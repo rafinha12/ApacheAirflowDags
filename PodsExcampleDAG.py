@@ -14,7 +14,7 @@ import pendulum
 
 namespace = conf.get('kubernetes', 'NAMESPACE')
 start = 1
-end = random.randint(3, 5)
+end = random.randint(7, 12)
 camerasInt = range(start, end + 1)
 cameras =  [str(x) for x in camerasInt]
 brancheo = len(cameras)
@@ -29,7 +29,7 @@ else:
 dag = DAG(
         dag_id='example_kubernetes_podsitatore',
         start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
-        concurrency=2, 
+        concurrency=4, 
         max_active_runs=2,
         catchup=False,
         schedule_interval="@daily",
