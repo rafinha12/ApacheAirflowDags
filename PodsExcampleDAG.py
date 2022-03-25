@@ -46,7 +46,7 @@ with dag:
     cameras =  [str(x) for x in camerasInt]
     
     branching = BranchPythonOperator(
-        task_id='branching'+brancheo,
+        task_id='branching'+str(brancheo),
         python_callable=lambda: cameras,
     )
     run_this_first >> branching
