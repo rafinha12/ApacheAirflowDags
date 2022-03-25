@@ -62,7 +62,7 @@ with dag:
             image="hello-world",
             labels={"foo": "bar"},
             name="airflow-test-pod",
-            task_id="task-"+ camera,
+            task_id="task-"+ str(camera),
             in_cluster=in_cluster, # if set to true, will look in the cluster, if false, looks for file
             cluster_context='minikube', # is ignored when in_cluster is set to True
             config_file=config_file,
