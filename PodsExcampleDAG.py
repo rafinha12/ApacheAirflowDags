@@ -14,7 +14,7 @@ import pendulum
 
 namespace = conf.get('kubernetes', 'NAMESPACE')
 start = 1
-end = random.randint(3, 30)
+end = random.randint(3, 5)
 camerasInt = range(start, end + 1)
 cameras =  [str(x) for x in camerasInt]
 brancheo = len(cameras)
@@ -29,7 +29,7 @@ else:
 dag = DAG(
         dag_id='example_kubernetes_podsitatore',
         start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
-        concurrency=20, 
+        concurrency=2, 
         max_active_runs=2,
         catchup=False,
         schedule_interval="@daily",
@@ -49,20 +49,18 @@ with dag:
     run_this_first >> branching
     join = DummyOperator(
         task_id='join',
-        trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS,
+        trigger_rule=TriggerRule.ALL_SUCCESS,
     )
 
     for camera in cameras:
         
-        t = DummyOperator(
-            task_id=str(camera),
-        )
+        
         k = KubernetesPodOperator(
             namespace=namespace,
             image="hello-world",
             labels={"foo": "bar"},
             name="airflow-test-pod",
-            task_id="task-"+ str(camera),
+            task_id=str(camera),
             in_cluster=in_cluster, # if set to true, will look in the cluster, if false, looks for file
             cluster_context='minikube', # is ignored when in_cluster is set to True
             config_file=config_file,
@@ -70,4 +68,4 @@ with dag:
             get_logs=True)
         
         # Label is optional here, but it can help identify more complex branches
-        branching >> Label(str(camera)) >> t >> k >> join
+        branching >>  k >> join
