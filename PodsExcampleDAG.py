@@ -49,7 +49,7 @@ with dag:
     run_this_first >> branching
     join = DummyOperator(
         task_id='join',
-        trigger_rule=TriggerRule.ALL_SUCCESS,
+        trigger_rule=TriggerRule.ALL_DONE,
     )
 
     for camera in cameras:
