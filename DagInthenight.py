@@ -9,6 +9,15 @@ def create_dag(dag_id,
                schedule,
                default_args):
     dag = DAG(dag_id, default_args=default_args, schedule_interval=schedule)
+    namespace = conf.get('kubernetes', 'NAMESPACE')
+
+
+    if namespace =='default':
+        config_file = '/home/user/.kube/config'
+        in_cluster=False
+    else:
+        in_cluster=True
+        config_file=None
     with dag:
         start = 1
         end = random.randint(3, 30)
@@ -23,7 +32,7 @@ def create_dag(dag_id,
             dag=dag
         )
         for camera in cameras:
-            
+            namespace=namespace,
             tab = KubernetesPodOperator(
             image="hello-world",
             random_name_suffix = True,
