@@ -60,8 +60,7 @@ with dag:
 
     for camera in cameras:
         j = DummyOperator(
-        task_id=str(camera),
-        trigger_rule=TriggerRule.ALL_SUCCESS,
+        task_id=str(camera)
         )
         
         k = KubernetesPodOperator(
