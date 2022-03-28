@@ -21,11 +21,20 @@ def create_dag(dag_id,
             task_id='clear',
             dag=dag
         )
-        for table in cameras:
-            tab = DummyOperator(
-                task_id=table,
-                dag=dag
-            )
+        for camera in cameras:
+            
+            tab = KubernetesPodOperator(
+            image="hello-world",
+            random_name_suffix = True,
+            labels={"foo": "bar"},
+            name="airflow-test-pod"+ str(camera),
+            task_id=str(camera),
+            in_cluster=True, # if set to true, will look in the cluster, if false, looks for file
+            cluster_context='minikube', # is ignored when in_cluster is set to True
+            is_delete_operator_pod=True,
+            get_logs=True,
+            dag = dag)
+            
             init >> tab >> clear
         return dag
 
