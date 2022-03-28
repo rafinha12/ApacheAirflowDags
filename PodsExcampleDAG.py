@@ -59,7 +59,10 @@ with dag:
     )
 
     for camera in cameras:
-        
+        j = DummyOperator(
+        task_id=str(camera),
+        trigger_rule=TriggerRule.ALL_SUCCESS,
+    )
         
         k = KubernetesPodOperator(
             namespace=namespace,
@@ -67,7 +70,7 @@ with dag:
             random_name_suffix = True,
             labels={"foo": "bar"},
             name="airflow-test-pod"+ str(camera),
-            task_id=str(camera),
+            task_id=str(camera)+'/'+brancheo,
             in_cluster=in_cluster, # if set to true, will look in the cluster, if false, looks for file
             cluster_context='minikube', # is ignored when in_cluster is set to True
             config_file=config_file,
@@ -76,4 +79,4 @@ with dag:
         
         
         # Label is optional here, but it can help identify more complex branches
-        branching >>  k >> join
+        branching >> j >> k >> join
