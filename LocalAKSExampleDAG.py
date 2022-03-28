@@ -54,7 +54,7 @@ with DAG(
 
     join = DummyOperator(
         task_id='join',
-        trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS,
+        trigger_rule=TriggerRule.ALL_SUCCESS,
     )
    
     for camera in cameras:

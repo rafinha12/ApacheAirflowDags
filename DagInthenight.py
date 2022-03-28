@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow import configuration as conf
+from airflow.utils.trigger_rule import TriggerRule
 import json
 import random
 
@@ -30,6 +31,7 @@ def create_dag(dag_id,
         )
         clear = DummyOperator(
             task_id='clear',
+            #trigger_rule=TriggerRule.ALL_SUCCESS,
             dag=dag
         )
         for camera in cameras:
