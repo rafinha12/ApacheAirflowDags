@@ -39,7 +39,7 @@ dag = DAG(
 
 with dag:
     start = 1
-    end = random.randint(7, 12)
+    end = 20 #random.randint(7, 12)
     camerasInt = range(start, end + 1)
     cameras =  [str(x) for x in camerasInt]
     brancheo = len(cameras)
@@ -62,7 +62,7 @@ with dag:
         j = DummyOperator(
         task_id=str(camera),
         trigger_rule=TriggerRule.ALL_SUCCESS,
-    )
+        )
         
         k = KubernetesPodOperator(
             namespace=namespace,
