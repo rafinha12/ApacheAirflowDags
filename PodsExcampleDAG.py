@@ -39,7 +39,7 @@ dag = DAG(
 
 with dag:
     start = 1
-    end = 20 #random.randint(7, 12)
+    end = random.randint(7, 12)
     camerasInt = range(start, end + 1)
     cameras =  [str(x) for x in camerasInt]
     brancheo = len(cameras)
