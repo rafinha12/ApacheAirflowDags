@@ -33,8 +33,9 @@ def create_dag(dag_id,
             dag=dag
         )
         for camera in cameras:
-            namespace=namespace,
+            
             tab = KubernetesPodOperator(
+            namespace=namespace,
             image="hello-world",
             random_name_suffix = True,
             labels={"foo": "bar"},
