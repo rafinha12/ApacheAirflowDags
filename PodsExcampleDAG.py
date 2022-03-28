@@ -30,6 +30,8 @@ dag = DAG(
         catchup=False,
         schedule_interval="@daily",
         tags=['example', 'example2'],
+        retries = 3,
+        retry_delay =  timedelta(minutes=1),
         )
 
 with dag:
@@ -50,7 +52,7 @@ with dag:
     run_this_first >> branching
     join = DummyOperator(
         task_id='join',
-        trigger_rule=TriggerRule.ALL_DONE,
+        trigger_rule=TriggerRule.ALL_SUCCESS,
     )
 
     for camera in cameras:
