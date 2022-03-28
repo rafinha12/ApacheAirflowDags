@@ -10,7 +10,7 @@ def create_dag(dag_id,
     dag = DAG(dag_id, default_args=default_args, schedule_interval=schedule)
     with dag:
         start = 1
-        end = random.randint(3, 8)
+        end = random.randint(3, 30)
         camerasInt = range(start, end + 1)
         cameras =  [str(x) for x in camerasInt]
         init = DummyOperator(
@@ -40,9 +40,9 @@ args = {
     'email': ['bigdataetl@gmail.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    'retries': 1,
+    'retries': 2,
     'retry_delay': timedelta(minutes=5),
-    'concurrency': 1,
+    'concurrency': 10,
     'max_active_runs': 1
 }
 globals()[dag_id] = create_dag(dag_id, schedule, args)
