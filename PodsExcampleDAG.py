@@ -13,8 +13,7 @@ import pendulum
 default_args = {
 'owner': 'Rafa',
 'retries': 3,
-'retry_delay': timedelta(minutes=1),
-'queue': 'worker_test'
+'retry_delay': timedelta(minutes=1)
 }
 
 namespace = conf.get('kubernetes', 'NAMESPACE')
@@ -73,6 +72,7 @@ with dag:
             config_file=config_file,
             is_delete_operator_pod=True,
             get_logs=True)
+        
         
         # Label is optional here, but it can help identify more complex branches
         branching >>  k >> join
