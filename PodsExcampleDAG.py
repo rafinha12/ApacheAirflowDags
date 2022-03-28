@@ -13,8 +13,7 @@ import pendulum
 default_args = {
 'owner': 'Rafa',
 'retries': 3,
-'retry_delay': timedelta(minutes=1),
-'queue': 'worker_test'
+'retry_delay': timedelta(minutes=1)
 }
 
 namespace = conf.get('kubernetes', 'NAMESPACE')
@@ -61,18 +60,18 @@ with dag:
 
     for camera in cameras:
         
-        
-        k = KubernetesPodOperator(
-            namespace=namespace,
-            image="hello-world",
-            labels={"foo": "bar"},
-            name="airflow-test-pod",
-            task_id=str(camera),
-            in_cluster=in_cluster, # if set to true, will look in the cluster, if false, looks for file
-            cluster_context='minikube', # is ignored when in_cluster is set to True
-            config_file=config_file,
-            is_delete_operator_pod=True,
-            get_logs=True)
+        k = KubernetesPodOperator(namespace=namespace,
+                          image="python:3.6.10",
+                          cmds=["Python","-c"],
+                          arguments=["print('hello world')"],
+                          labels={"foo": "bar"},
+                          name="passing-test",
+                          task_id=str(camera),
+                          env_vars={'EXAMPLE_VAR': '/example/value'},
+                          in_cluster=True,
+                          get_logs=True
+                          )
+       
         
         # Label is optional here, but it can help identify more complex branches
         branching >>  k >> join
