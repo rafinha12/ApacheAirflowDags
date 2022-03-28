@@ -45,17 +45,21 @@ with dag:
     brancheo = len(cameras)
     run_this_first = DummyOperator(
         task_id='run_this_first',
+        dag = dag
     )
     
     
     branching = BranchPythonOperator(
         task_id='branching',
         python_callable=lambda: cameras,
+        
+        dag = dag
     )
-    run_this_first >> branching
     join = DummyOperator(
         task_id='join',
         trigger_rule=TriggerRule.ALL_SUCCESS,
+        
+        dag = dag
     )
 
     for camera in cameras:
@@ -74,7 +78,8 @@ with dag:
             cluster_context='minikube', # is ignored when in_cluster is set to True
             config_file=config_file,
             is_delete_operator_pod=True,
-            get_logs=True)
+            get_logs=True,
+            dag = dag)
         
         
         # Label is optional here, but it can help identify more complex branches
