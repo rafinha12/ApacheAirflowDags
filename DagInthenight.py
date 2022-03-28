@@ -6,8 +6,7 @@ import random
 
 def create_dag(dag_id,
                schedule,
-               default_args,
-               conf):
+               default_args):
     dag = DAG(dag_id, default_args=default_args, schedule_interval=schedule)
     with dag:
         start = 1
