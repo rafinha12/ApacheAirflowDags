@@ -70,7 +70,7 @@ with dag:
             random_name_suffix = True,
             labels={"foo": "bar"},
             name="airflow-test-pod"+ str(camera),
-            task_id=str(camera)+'/'+str(brancheo),
+            task_id=str(camera)+'_'+str(brancheo),
             in_cluster=in_cluster, # if set to true, will look in the cluster, if false, looks for file
             cluster_context='minikube', # is ignored when in_cluster is set to True
             config_file=config_file,
