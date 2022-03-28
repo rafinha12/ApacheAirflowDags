@@ -10,7 +10,12 @@ from airflow.utils.trigger_rule import TriggerRule
 import random
 import pendulum
 
-
+default_args = {
+'owner': 'Rafa',
+'retries': 3,
+'retry_delay': timedelta(minutes=1),
+'queue': 'worker_test'
+}
 
 namespace = conf.get('kubernetes', 'NAMESPACE')
 
@@ -30,8 +35,7 @@ dag = DAG(
         catchup=False,
         schedule_interval="@daily",
         tags=['example', 'example2'],
-        retries = 3,
-        retry_delay =  timedelta(minutes=1),
+        default_args=default_args
         )
 
 with dag:
