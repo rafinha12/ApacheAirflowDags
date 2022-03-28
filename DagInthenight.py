@@ -10,6 +10,10 @@ def create_dag(dag_id,
                conf):
     dag = DAG(dag_id, default_args=default_args, schedule_interval=schedule)
     with dag:
+        start = 1
+        end = random.randint(3, 8)
+        camerasInt = range(start, end + 1)
+        cameras =  [str(x) for x in camerasInt]
         init = DummyOperator(
             task_id='Init',
             dag=dag
@@ -18,21 +22,18 @@ def create_dag(dag_id,
             task_id='clear',
             dag=dag
         )
-        for table in conf:
+        for table in cameras:
             tab = DummyOperator(
                 task_id=table,
                 dag=dag
             )
             init >> tab >> clear
         return dag
-start = 1
-end = random.randint(3, 8)
-camerasInt = range(start, end + 1)
-cameras =  [str(x) for x in camerasInt]
 
-conf = cameras
+
+
 schedule = '@daily'
-dag_id = 'cameras' + len(cameras)
+dag_id = 'cameras'
 args = {
     'owner': 'BigDataETL',
     'depends_on_past': False,
@@ -45,4 +46,4 @@ args = {
     'concurrency': 1,
     'max_active_runs': 1
 }
-globals()[dag_id] = create_dag(dag_id, schedule, args, conf)
+globals()[dag_id] = create_dag(dag_id, schedule, args)
