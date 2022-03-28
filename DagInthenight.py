@@ -63,7 +63,7 @@ args = {
     'email_on_retry': False,
     'retries': 2,
     'retry_delay': timedelta(minutes=1),
-    'concurrency': 10,
+    'concurrency': 1,
     'max_active_runs': 1
 }
 globals()[dag_id] = create_dag(dag_id, schedule, args)
