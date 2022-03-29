@@ -34,7 +34,7 @@ with DAG(
     dag_id='example_Rafaeñ',
     start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
     catchup=False,
-    schedule_interval="* */1 * * *",
+    schedule_interval="@daily",
     tags=['example', 'example2'],
 ) as dag:
     run_this_first = DummyOperator(
