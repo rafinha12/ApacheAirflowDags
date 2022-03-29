@@ -31,7 +31,7 @@ import random
 
 
 with DAG(
-    dag_id='example_Rafa',
+    dag_id='example_Rafaeñ',
     start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
     catchup=False,
     schedule_interval="* */1 * * *",
