@@ -28,7 +28,15 @@ from airflow.operators.python import BranchPythonOperator
 from airflow.utils.edgemodifier import Label
 from airflow.utils.trigger_rule import TriggerRule
 import random
+from datetime import datetime, timedelta
 
+default_args = {
+'owner': 'Rafa',
+'retries': 3,
+'retry_delay': timedelta(minutes=1),
+'concurrency': 3,
+'max_active_runs': 3
+}
 
 with DAG(
     dag_id='example_Rafaeñ',
@@ -36,6 +44,7 @@ with DAG(
     catchup=False,
     schedule_interval="@daily",
     tags=['example', 'example2'],
+    default_args=default_args
 ) as dag:
     run_this_first = DummyOperator(
         task_id='run_this_first',
