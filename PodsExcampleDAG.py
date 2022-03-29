@@ -13,7 +13,9 @@ import pendulum
 default_args = {
 'owner': 'Rafa',
 'retries': 3,
-'retry_delay': timedelta(minutes=1)
+'retry_delay': timedelta(minutes=1),
+'concurrency': 3,
+'max_active_runs': 3
 }
 
 namespace = conf.get('kubernetes', 'NAMESPACE')
@@ -63,9 +65,7 @@ with dag:
     )
 
     for camera in cameras:
-        j = DummyOperator(
-        task_id=str(camera)
-        )
+        
         
         k = KubernetesPodOperator(
             namespace=namespace,
@@ -73,14 +73,15 @@ with dag:
             random_name_suffix = True,
             labels={"foo": "bar"},
             name="airflow-test-pod"+ str(camera),
-            task_id=str(camera)+'_'+str(brancheo),
+            task_id=str(camera),
             in_cluster=in_cluster, # if set to true, will look in the cluster, if false, looks for file
             cluster_context='minikube', # is ignored when in_cluster is set to True
             config_file=config_file,
             is_delete_operator_pod=True,
             get_logs=True,
-            dag = dag)
+            dag = dag
+        )
         
         
         # Label is optional here, but it can help identify more complex branches
-        branching >> j >> k >> join
+        branching >>  k >> join

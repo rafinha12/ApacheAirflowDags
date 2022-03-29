@@ -22,7 +22,7 @@ def create_dag(dag_id,
         config_file=None
     with dag:
         start = 1
-        end = random.randint(3, 30)
+        end = 20#random.randint(3, 30)
         camerasInt = range(start, end + 1)
         cameras =  [str(x) for x in camerasInt]
         init = DummyOperator(
@@ -65,7 +65,7 @@ args = {
     'email_on_retry': False,
     'retries': 2,
     'retry_delay': timedelta(minutes=1),
-    'concurrency': 1,
-    'max_active_runs': 1
+    'concurrency': 3,
+    'max_active_runs': 3
 }
 globals()[dag_id] = create_dag(dag_id, schedule, args)
