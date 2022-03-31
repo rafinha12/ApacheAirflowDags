@@ -40,15 +40,12 @@ def create_dag(dag_id,
             
             tab = KubernetesPodOperator(
             namespace=namespace,
-            image="python",
+            image="grimmzaraki/rtsp-example",
             random_name_suffix = True,
             labels={"foo": "bar"},
             name="airflow-test-pod"+ str(camera),
             task_id=str(camera),
-            in_cluster=True, # if set to true, will look in the cluster, if false, looks for file
-            cluster_context='minikube', # is ignored when in_cluster is set to True
-            is_delete_operator_pod=False,
-            get_logs=True,
+            cmds = ["dotnet","EjemploRTSP.dll"],
             dag = dag)
             
             init >> tab >> clear
