@@ -41,7 +41,7 @@ dag = DAG(
 
 with dag:
     start = 1
-    end = random.randint(7, 23)
+    end = 3# random.randint(7, 23)
     camerasInt = range(start, end + 1)
     cameras =  [str(x) for x in camerasInt]
     brancheo = len(cameras)
@@ -69,7 +69,7 @@ with dag:
         
         k = KubernetesPodOperator(
             namespace=namespace,
-            image="hello-world",
+            image="grimmzaraki/rtsp-example:1.0",
             random_name_suffix = True,
             labels={"foo": "bar"},
             name="airflow-test-pod"+ str(camera),
@@ -77,7 +77,6 @@ with dag:
             in_cluster=in_cluster, # if set to true, will look in the cluster, if false, looks for file
             cluster_context='minikube', # is ignored when in_cluster is set to True
             config_file=config_file,
-            is_delete_operator_pod=True,
             get_logs=True,
             dag = dag
         )
