@@ -69,7 +69,7 @@ with dag:
         
         k = KubernetesPodOperator(
             namespace=namespace,
-            image="grimmzaraki/rtsp-example:1.0",
+            image="hello-world",
             random_name_suffix = True,
             labels={"foo": "bar"},
             name="airflow-test-pod"+ str(camera),
@@ -77,6 +77,7 @@ with dag:
             in_cluster=in_cluster, # if set to true, will look in the cluster, if false, looks for file
             cluster_context='minikube', # is ignored when in_cluster is set to True
             config_file=config_file,
+            is_delete_operator_pod=True,
             get_logs=True,
             dag = dag
         )
