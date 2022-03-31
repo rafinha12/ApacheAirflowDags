@@ -7,6 +7,8 @@ from airflow.utils.trigger_rule import TriggerRule
 import json
 import random
 
+
+
 def create_dag(dag_id,
                schedule,
                default_args):
@@ -38,7 +40,7 @@ def create_dag(dag_id,
             
             tab = KubernetesPodOperator(
             namespace=namespace,
-            image="hello-world",
+            image="grimmzaraki/rtsp-example",
             random_name_suffix = True,
             labels={"foo": "bar"},
             name="airflow-test-pod"+ str(camera),
