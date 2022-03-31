@@ -40,7 +40,7 @@ def create_dag(dag_id,
             
             tab = KubernetesPodOperator(
             namespace=namespace,
-            image="grimmzaraki/rtsp-example:1.0",
+            image="grimmzaraki/rtsp-example",
             random_name_suffix = True,
             labels={"foo": "bar"},
             name="airflow-test-pod"+ str(camera),
