@@ -51,7 +51,7 @@ with DAG(
     )
 
     start = 1
-    end = 20#random.randint(3, 8)
+    end = random.randint(3, 8)
     camerasInt = range(start, end + 1)
     cameras =  [str(x) for x in camerasInt]
 
