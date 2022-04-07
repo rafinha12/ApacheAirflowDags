@@ -32,8 +32,6 @@ from airflow.utils.trigger_rule import TriggerRule
 import random
 from datetime import datetime, timedelta
 
-
-
 namespace = conf.get('kubernetes', 'NAMESPACE')
 
 if namespace =='default':
