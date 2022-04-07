@@ -27,6 +27,7 @@ from airflow.operators.dummy import DummyOperator
 from airflow.operators.python import BranchPythonOperator
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow.utils.edgemodifier import Label
+from airflow import configuration as conf
 from airflow.utils.trigger_rule import TriggerRule
 import random
 from datetime import datetime, timedelta
