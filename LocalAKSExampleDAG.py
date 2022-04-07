@@ -25,11 +25,23 @@ import pendulum
 from airflow import DAG
 from airflow.operators.dummy import DummyOperator
 from airflow.operators.python import BranchPythonOperator
+from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow.utils.edgemodifier import Label
 from airflow.utils.trigger_rule import TriggerRule
 import random
 from datetime import datetime, timedelta
 
+
+
+namespace = conf.get('kubernetes', 'NAMESPACE')
+
+if namespace =='default':
+    config_file = '/home/user/.kube/config'
+    in_cluster=False
+else:
+    in_cluster=True
+    config_file=None
+    
 default_args = {
 'owner': 'Rafa',
 'retries': 3,
@@ -72,9 +84,20 @@ with DAG(
             task_id=str(camera),
         )
 
-        dummy_follow = DummyOperator(
-            task_id='follow_' + str(camera),
+        k = KubernetesPodOperator(
+            namespace=namespace,
+            image="grimmzaraki/ejemplo-rtsp",
+            random_name_suffix = True,
+            labels={"foo": "bar"},
+            name="airflow-test-pod"+ str(camera),
+            task_id=str(camera),
+            in_cluster=in_cluster, # if set to true, will look in the cluster, if false, looks for file
+            cluster_context='minikube', # is ignored when in_cluster is set to True
+            config_file=config_file,
+            is_delete_operator_pod=True,
+            get_logs=True,
+            dag = dag
         )
 
         # Label is optional here, but it can help identify more complex branches
-        branching >> Label(str(camera)) >> t >> dummy_follow >> join
+        branching >> Label(str(camera)) >> t >> k >> join
