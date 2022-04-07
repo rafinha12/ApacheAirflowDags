@@ -1,46 +1,15 @@
-#
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
-# specific language governing permissions and limitations
-# under the License.
-
-"""Example DAG demonstrating the usage of the BranchPythonOperator."""
-
-import random
-
-import pendulum
-
 from airflow import DAG
+from datetime import datetime, timedelta
+from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
+from airflow import configuration as conf
+from airflow.utils.dates import days_ago
 from airflow.operators.dummy import DummyOperator
 from airflow.operators.python import BranchPythonOperator
-from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow.utils.edgemodifier import Label
-from airflow import configuration as conf
 from airflow.utils.trigger_rule import TriggerRule
 import random
-from datetime import datetime, timedelta
+import pendulum
 
-namespace = conf.get('kubernetes', 'NAMESPACE')
-
-if namespace =='default':
-    config_file = '/home/user/.kube/config'
-    in_cluster=False
-else:
-    in_cluster=True
-    config_file=None
-    
 default_args = {
 'owner': 'Rafa',
 'retries': 3,
@@ -49,38 +18,55 @@ default_args = {
 'max_active_runs': 3
 }
 
-with DAG(
-    dag_id='example_Rafaeñ',
-    start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
-    catchup=False,
-    schedule_interval="@daily",
-    tags=['example', 'example2'],
-    default_args=default_args
-) as dag:
-    run_this_first = DummyOperator(
-        task_id='run_this_first',
-    )
+namespace = conf.get('kubernetes', 'NAMESPACE')
 
+
+if namespace =='default':
+    config_file = '/home/user/.kube/config'
+    in_cluster=False
+else:
+    in_cluster=True
+    config_file=None
+
+dag = DAG(
+        dag_id='example_kubernetes_podsitatore',
+        start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
+        concurrency=4, 
+        max_active_runs=2,
+        catchup=False,
+        schedule_interval="@daily",
+        tags=['example', 'example2'],
+        default_args=default_args
+        )
+
+with dag:
     start = 1
-    end = random.randint(3, 8)
+    end = random.randint(7, 23)
     camerasInt = range(start, end + 1)
     cameras =  [str(x) for x in camerasInt]
-
+    brancheo = len(cameras)
+    run_this_first = DummyOperator(
+        task_id='run_this_first',
+        dag = dag
+    )
+    
+    
     branching = BranchPythonOperator(
         task_id='branching',
         python_callable=lambda: cameras,
+        
+        dag = dag
     )
-    run_this_first >> branching
-
     join = DummyOperator(
         task_id='join',
         trigger_rule=TriggerRule.ALL_SUCCESS,
-    )
-   
-    for camera in cameras:
-
         
+        dag = dag
+    )
 
+    for camera in cameras:
+        
+        
         k = KubernetesPodOperator(
             namespace=namespace,
             image="grimmzaraki/ejemplo-docker:1.0",
@@ -95,6 +81,7 @@ with DAG(
             get_logs=True,
             dag = dag
         )
-
+        
+        
         # Label is optional here, but it can help identify more complex branches
-        branching >> k >> join
+        branching >>  k >> join
