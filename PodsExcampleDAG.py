@@ -69,7 +69,7 @@ with dag:
         
         k = KubernetesPodOperator(
             namespace=namespace,
-            image="grimmzaraki/ejemplo-rtsp",
+            image="grimmzaraki/ejemplo-docker:1.0",
             random_name_suffix = True,
             labels={"foo": "bar"},
             name="airflow-test-pod"+ str(camera),
