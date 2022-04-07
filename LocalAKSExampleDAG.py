@@ -79,9 +79,7 @@ with DAG(
    
     for camera in cameras:
 
-        t = DummyOperator(
-            task_id=str(camera),
-        )
+        
 
         k = KubernetesPodOperator(
             namespace=namespace,
@@ -99,4 +97,4 @@ with DAG(
         )
 
         # Label is optional here, but it can help identify more complex branches
-        branching >> Label(str(camera)) >> t >> k >> join
+        branching >> k >> join
